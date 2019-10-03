@@ -19,3 +19,10 @@ logstash_enabled_on_boot: true
 
 logstash_install_plugins:
   - logstash-input-beats
+
+logstash_heap_size: "{{ (ansible_memory_mb.real.total - 1024) | int }}m"
+logstash_settings:
+  - dead_letter_queue.enable: True
+  - path.data: /var/lib/logstash
+  - path.config: /etc/logstash/conf.d
+  - path.dead_letter_queue: "/var/logstash/dead_letter_queue"
