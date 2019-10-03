@@ -11,6 +11,33 @@
     - 30-elasticsearch-output.conf
   notify: restart logstash
 
+- name: Configure logstash.yml
+  template:
+    src: logstash.yml.j2
+    dest: "/etc/logstash/logstash.yml"
+  notify: restart logstash
+
+- name: Create Logstash filters
+  template:
+    src: "filter.conf.j2"
+    dest: "/etc/logstash/conf.d/filter.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart logstash
+  when: logstash_filter is defined
+
+- name: set JVM heap size
+  lineinfile:
+    dest: /etc/logstash/jvm.options
+    regexp: "-{{ item }}"
+    line: "-{{ item }}{{logstash_heap_size }}"
+  when: logstash_heap_size is defined
+  with_items:
+    - Xms
+    - Xmx
+  notify: retart logstash
+
 - name: Create Logstash filters.
   copy:
     src: "filters/{{ item }}"
@@ -20,10 +47,6 @@
     mode: 0644
   with_items:
     - 10-syslog.conf
-    - 11-nginx.conf
-    - 12-apache.conf
-    - 14-solr.conf
-    - 15-drupal.conf
   notify: restart logstash
 
 - name: Create Logstash configuration file for local syslog.

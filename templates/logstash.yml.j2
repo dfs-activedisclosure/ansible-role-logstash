@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+# Settings file in flat keys
+# https://www.elastic.co/guide/en/logstash/current/logstash-settings-file.html'
+{% for setting in logstash_settings %}
+{{ setting | to_yaml | replace('{', '') | replace('}', '') }}
+{% endfor %}
