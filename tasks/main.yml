@@ -1,10 +1,16 @@
 ---
 - name: Include OS Specific setup tasks
-  include: setup-{{ ansible_os_family }}.yml
+  import_tasks: setup-{{ ansible_os_family }}.yml
 
-- include: config.yml
-- include: ssl.yml
-- include: plugins.yml
+- name: Configure logstash
+  import_task: config.yml
+
+- name: Configure ssl
+  import_task: ssl.yml
+  when: logstash_configure_ssl
+
+- name: Manage plugns
+  import_tasks: plugins.yml
 
 - name: Ensure Logstash is started and enabled on boot.
   service:
