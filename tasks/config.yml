@@ -17,6 +17,16 @@
     dest: "/etc/logstash/logstash.yml"
   notify: restart logstash
 
+- name: Create Logstash filters
+  template:
+    src: "filter.conf.j2"
+    dest: "/etc/logstash/conf.d/filter.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart logstash
+  when: logstash_filter is defined
+
 - name: set JVM heap size
   lineinfile:
     dest: /etc/logstash/jvm.options
